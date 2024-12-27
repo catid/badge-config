@@ -44,12 +44,12 @@
                 const value1 = await textCharacteristic1.readValue();
                 const decodedValue1 = new TextDecoder().decode(value1);
                 console.log("Read text1: " + decodedValue1);
-                document.getElementById('text1').textContent = decodedValue1;
+                document.getElementById('text1').value = decodedValue1;
 
                 const value2 = await textCharacteristic2.readValue();
                 const decodedValue2 = new TextDecoder().decode(value2);
                 console.log("Read text2: " + decodedValue2);
-                document.getElementById('text2').textContent = decodedValue2;
+                document.getElementById('text2').value = decodedValue2;
 
                 document.getElementById('config').style.display = 'block';
                 document.getElementById('status').textContent = 'Connected!';
