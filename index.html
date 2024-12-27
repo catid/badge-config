@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Badge Display Configuration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial; max-width: 500px; margin: 20px auto; padding: 20px; }
+        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; }
+        input { width: 100%; padding: 8px; margin: 8px 0; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h2>Badge Display Configuration</h2>
+    <button id="connect">Connect to Badge</button>
+    <div id="config" style="display:none">
+        <p>Line 1 (max 13 chars):</p>
+        <input type="text" id="text1" maxlength="13">
+        <p>Line 2 (max 13 chars):</p>
+        <input type="text" id="text2" maxlength="13">
+        <p><button id="save">Save</button></p>
+    </div>
+    <div id="status"></div>
+
+    <script>
+        let textCharacteristic1, textCharacteristic2;
+
+        async function connect() {
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'Badge Display' }],
+                    optionalServices: ['181C']
+                });
+                
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService('181C');
+                textCharacteristic1 = await service.getCharacteristic('2A6E');
+                textCharacteristic2 = await service.getCharacteristic('2A6F');
+                
+                document.getElementById('config').style.display = 'block';
+                document.getElementById('status').textContent = 'Connected!';
+            } catch (error) {
+                document.getElementById('status').textContent = 'Error: ' + error;
+            }
+        }
+
+        async function saveText() {
+            try {
+                const text1 = document.getElementById('text1').value;
+                const text2 = document.getElementById('text2').value;
+                
+                await textCharacteristic1.writeValue(new TextEncoder().encode(text1));
+                await textCharacteristic2.writeValue(new TextEncoder().encode(text2));
+                
+                document.getElementById('status').textContent = 'Saved successfully!';
+            } catch (error) {
+                document.getElementById('status').textContent = 'Error saving: ' + error;
+            }
+        }
+
+        document.getElementById('connect').addEventListener('click', connect);
+        document.getElementById('save').addEventListener('click', saveText);
+    </script>
+</body>
+</html>
