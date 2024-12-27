@@ -14,10 +14,10 @@
     <h2>Badge Display Configuration</h2>
     <button id="connect">Connect to Badge</button>
     <div id="config" style="display:none">
-        <p>Line 1 (max 13 chars):</p>
-        <input type="text" id="text1" maxlength="13">
-        <p>Line 2 (max 13 chars):</p>
-        <input type="text" id="text2" maxlength="13">
+        <p>Line 1 (max 20 chars):</p>
+        <input type="text" id="text1" maxlength="20">
+        <p>Line 2 (max 20 chars):</p>
+        <input type="text" id="text2" maxlength="20">
         <p><button id="write">Write</button></p>
     </div>
     <div id="status"></div>
@@ -43,10 +43,12 @@
 
                 const value1 = await textCharacteristic1.readValue();
                 const decodedValue1 = new TextDecoder().decode(value1);
+                console.log("Read text1: " + decodedValue1);
                 document.getElementById('text1').textContent = decodedValue1;
 
                 const value2 = await textCharacteristic2.readValue();
                 const decodedValue2 = new TextDecoder().decode(value2);
+                console.log("Read text2: " + decodedValue2);
                 document.getElementById('text2').textContent = decodedValue2;
 
                 document.getElementById('config').style.display = 'block';
