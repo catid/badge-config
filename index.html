@@ -37,9 +37,18 @@
                 
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService(SERVICE_UUID);
+
                 textCharacteristic1 = await service.getCharacteristic(TEXT1_UUID);
                 textCharacteristic2 = await service.getCharacteristic(TEXT2_UUID);
-                
+
+                const value1 = await textCharacteristic1.readValue();
+                const decodedValue1 = new TextDecoder().decode(value1);
+                document.getElementById('text1').textContent = decodedValue1;
+
+                const value2 = await textCharacteristic2.readValue();
+                const decodedValue2 = new TextDecoder().decode(value2);
+                document.getElementById('text2').textContent = decodedValue2;
+
                 document.getElementById('config').style.display = 'block';
                 document.getElementById('status').textContent = 'Connected!';
             } catch (error) {
