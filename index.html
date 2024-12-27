@@ -11,14 +11,14 @@
     </style>
 </head>
 <body>
-    <h2>Badge Display Configuration V2</h2>
+    <h2>Badge Display Configuration</h2>
     <button id="connect">Connect to Badge</button>
     <div id="config" style="display:none">
         <p>Line 1 (max 13 chars):</p>
         <input type="text" id="text1" maxlength="13">
         <p>Line 2 (max 13 chars):</p>
         <input type="text" id="text2" maxlength="13">
-        <p><button id="save">Save</button></p>
+        <p><button id="write">Write</button></p>
     </div>
     <div id="status"></div>
 
@@ -47,7 +47,7 @@
             }
         }
 
-        async function saveText() {
+        async function writeText() {
             try {
                 const text1 = document.getElementById('text1').value;
                 const text2 = document.getElementById('text2').value;
@@ -55,14 +55,14 @@
                 await textCharacteristic1.writeValue(new TextEncoder().encode(text1));
                 await textCharacteristic2.writeValue(new TextEncoder().encode(text2));
                 
-                document.getElementById('status').textContent = 'Saved successfully!';
+                document.getElementById('status').textContent = 'Written successfully!';
             } catch (error) {
-                document.getElementById('status').textContent = 'Error saving: ' + error;
+                document.getElementById('status').textContent = 'Error writing: ' + error;
             }
         }
 
         document.getElementById('connect').addEventListener('click', connect);
-        document.getElementById('save').addEventListener('click', saveText);
+        document.getElementById('write').addEventListener('click', writeText);
     </script>
 </body>
 </html>
