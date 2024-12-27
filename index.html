@@ -23,19 +23,22 @@
     <div id="status"></div>
 
     <script>
+        const SERVICE_UUID = '00001815-0000-1000-8000-00805f9b34fb';
+        const TEXT1_UUID = '00002a6e-0000-1000-8000-00805f9b34fb';
+        const TEXT2_UUID = '00002a6f-0000-1000-8000-00805f9b34fb';
         let textCharacteristic1, textCharacteristic2;
 
         async function connect() {
             try {
                 const device = await navigator.bluetooth.requestDevice({
                     filters: [{ name: 'Badge Display' }],
-                    optionalServices: ['181C']
+                    optionalServices: [SERVICE_UUID]
                 });
                 
                 const server = await device.gatt.connect();
-                const service = await server.getPrimaryService('181C');
-                textCharacteristic1 = await service.getCharacteristic('2A6E');
-                textCharacteristic2 = await service.getCharacteristic('2A6F');
+                const service = await server.getPrimaryService(SERVICE_UUID);
+                textCharacteristic1 = await service.getCharacteristic(TEXT1_UUID);
+                textCharacteristic2 = await service.getCharacteristic(TEXT2_UUID);
                 
                 document.getElementById('config').style.display = 'block';
                 document.getElementById('status').textContent = 'Connected!';
