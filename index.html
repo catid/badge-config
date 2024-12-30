@@ -26,7 +26,7 @@
             border-radius: 5px;
             margin-top: 15px;
         }
-        .pairing-note {
+        .pairing-note, .battery-note {
             background: #fff3cd;
             border: 1px solid #ffeeba;
             color: #856404;
@@ -34,12 +34,26 @@
             border-radius: 5px;
             margin: 15px 0;
         }
+        .battery-note {
+            background: #e2e3e5;
+            border: 1px solid #d6d8db;
+            color: #383d41;
+        }
     </style>
 </head>
 <body>
     <h2>Badge Display Configuration</h2>
     <div class="pairing-note">
         <strong>Important:</strong> The badge can only be paired within the first 60 seconds after being powered on. Please turn the badge off and then on again before attempting to configure it.
+    </div>
+    <div class="battery-note">
+        <strong>Battery Information:</strong> If the badge doesn't turn on, you may need to replace the 2x CR2032 3.3V coin cell batteries. To access the batteries:
+        <ul style="margin: 10px 0; padding-left: 20px;">
+            <li>Locate the two 3mm bolts on the back of the badge</li>
+            <li>Remove these bolts to release the battery pod</li>
+            <li>Open the pod by hand to access the batteries</li>
+            <li><strong>Important:</strong> When replacing batteries, maintain the same orientation as the old ones</li>
+        </ul>
     </div>
     <div id="ios-fallback" style="display:none" class="ios-message">
         <h3>iOS Device Detected</h3>
