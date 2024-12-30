@@ -5,31 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body { font-family: Arial; max-width: 500px; margin: 20px auto; padding: 20px; }
-        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; }
+        button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; }
+        button:disabled { background: #cccccc; cursor: not-allowed; }
         input { width: 100%; padding: 8px; margin: 8px 0; }
         .error { color: red; }
+        .ios-message { 
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .ios-message a {
+            display: inline-block;
+            background: #0066cc;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
     <h2>Badge Display Configuration</h2>
-    <button id="connect">Connect to Badge</button>
-    <div id="config" style="display:none">
-        <p>Line 1 (max 20 chars):</p>
-        <input type="text" id="text1" maxlength="20">
-        <p>Line 2 (max 20 chars):</p>
-        <input type="text" id="text2" maxlength="20">
-        <p><button id="write">Write</button></p>
+    <div id="ios-fallback" style="display:none" class="ios-message">
+        <h3>iOS Device Detected</h3>
+        <p>This web configuration tool is not compatible with iOS devices. Please use the nRF Connect for Mobile app instead:</p>
+        <a href="https://apps.apple.com/us/app/nrf-connect-for-mobile/id1054362403" target="_blank">Download nRF Connect for iOS</a>
     </div>
-    <div id="status"></div>
-
+    <div id="main-content">
+        <button id="connect">Connect to Badge</button>
+        <div id="config" style="display:none">
+            <p>Line 1 (max 20 chars):</p>
+            <input type="text" id="text1" maxlength="20">
+            <p>Line 2 (max 20 chars):</p>
+            <input type="text" id="text2" maxlength="20">
+            <p><button id="write">Write</button></p>
+        </div>
+        <div id="status"></div>
+    </div>
     <script>
         const SERVICE_UUID = '00001815-0000-1000-8000-00805f9b34fb';
         const TEXT1_UUID = '00002a6e-0000-1000-8000-00805f9b34fb';
         const TEXT2_UUID = '00002a6f-0000-1000-8000-00805f9b34fb';
         let textCharacteristic1, textCharacteristic2;
 
+        // Check if the device is running iOS
+        function isIOS() {
+            return [
+                'iPad Simulator',
+                'iPhone Simulator',
+                'iPod Simulator',
+                'iPad',
+                'iPhone',
+                'iPod'
+            ].includes(navigator.platform)
+            // iPad on iOS 13 detection
+            || (navigator.userAgent.includes("Mac") && "ontouchend" in document);
+        }
+
+        // Handle iOS display logic
+        function handleIOSDevice() {
+            if (isIOS()) {
+                document.getElementById('ios-fallback').style.display = 'block';
+                document.getElementById('main-content').style.display = 'none';
+                return true;
+            }
+            return false;
+        }
+
         async function connect() {
             try {
+                if (handleIOSDevice()) return;
+
                 const device = await navigator.bluetooth.requestDevice({
                     filters: [{ name: 'Badge Display' }],
                     optionalServices: [SERVICE_UUID]
@@ -37,20 +87,19 @@
                 
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService(SERVICE_UUID);
-
                 textCharacteristic1 = await service.getCharacteristic(TEXT1_UUID);
                 textCharacteristic2 = await service.getCharacteristic(TEXT2_UUID);
-
+                
                 const value1 = await textCharacteristic1.readValue();
                 const decodedValue1 = new TextDecoder().decode(value1);
                 console.log("Read text1: " + decodedValue1);
                 document.getElementById('text1').value = decodedValue1;
-
+                
                 const value2 = await textCharacteristic2.readValue();
                 const decodedValue2 = new TextDecoder().decode(value2);
                 console.log("Read text2: " + decodedValue2);
                 document.getElementById('text2').value = decodedValue2;
-
+                
                 document.getElementById('config').style.display = 'block';
                 document.getElementById('status').textContent = 'Connected!';
             } catch (error) {
@@ -72,6 +121,9 @@
             }
         }
 
+        // Initialize iOS check on page load
+        handleIOSDevice();
+        
         document.getElementById('connect').addEventListener('click', connect);
         document.getElementById('write').addEventListener('click', writeText);
     </script>
